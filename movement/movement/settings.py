@@ -39,8 +39,12 @@ CORE_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-THIRD_PARTY_APPS = []
-APPS = []
+THIRD_PARTY_APPS = [
+    'rest_framework'
+]
+APPS = [
+    'locations'
+]
 
 INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + APPS
 

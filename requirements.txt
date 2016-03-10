@@ -3,3 +3,6 @@ django
 djangorestframework
 markdown
 django-filter
+requests
+celery
+django-celery
