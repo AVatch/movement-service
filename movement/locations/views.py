@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 from .geoservice import geoSearch
-from .models import Location
+from .models import Location, CohortAssociation, UserReveal
 from .serializers import LocationSerializer
 
 
@@ -30,7 +30,8 @@ class LocationListCreateAPIHandler(APIView):
                                  'name': loc.name, 
                                  'lat': loc.lat, 
                                  'lng': loc.lng,
-                                 'total_visits': loc.total_visits } for loc in locations ] )
+                                 'total_visits': loc.get_total_visits( ) 
+                               } for loc in locations ] )
             
         except Exception as e:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
@@ -43,8 +44,13 @@ class LocationListCreateAPIHandler(APIView):
         if loc_id:
             try:
                 loc = Location.objects.get(id=loc_id)
-                loc.total_visits = max( loc.total_visits - 1, 0 )
-                loc.save( )
+                # decrement the total visits
+                for cohort in request.user.groups.all():
+                    cohort_association = CohortAssociation.objects.get( cohort=cohort,
+                                                                        location=loc )
+                    cohort_association.total_visits = max( cohort_association.total_visits - 1, 0 )
+                    cohort_association.save()
+
                 return Response( {}, status=status.HTTP_200_OK )
             except ObjectDoesNotExist:
                 return Response( {}, status=status.HTTP_404_NOT_FOUND ) 
@@ -74,16 +80,11 @@ class LocationListCreateAPIHandler(APIView):
                 # prob should be a many to many with a Category model
             
             # increment the total visits
-            # TODO: This needs to be more robust so that 
-            # we can keep track of visits on a per cohort basis.
-            # ie. Cohort01 total_visits was 12 while Cohort02 total_visits was 2
-            # same should apply to total_reveals, altough that is more simple
-            loc.total_visits += 1
-            
-            # add the cohort the user belongs in to the Location
-            # associated cohorts
             for cohort in request.user.groups.all():
-                loc.associated_cohorts.add( cohort )
+                cohort_association, created = CohortAssociation.objects.get_or_create( cohort=cohort,
+                                                                                       location=loc )
+                cohort_association.total_visits += 1
+                cohort_association.save()
 
             # commit the changes
             loc.save()
@@ -110,22 +111,22 @@ class LocationRevealAPIHandler(APIView):
         loc = self.get_object(pk)
         
         # first lets ensure the user has already revealed themselves
-        if request.user in loc.revealed_users.all():
+        try:    
+            reveal = UserReveal.objects.get( user=request.user, location=loc )
             
             # find the cohort intersection between the requester and the locaiton venues
-            cohort_intersection = set( request.user.groups.all() ).intersection( loc.associated_cohorts.all() ) 
-        
+            cohort_intersection = set( request.user.groups.all() ).intersection( [ cohort_association.cohort for cohort_association in CohortAssociation.objects.filter( location=loc ) ] ) 
+       
             response = []
-            
+            user_reveals = UserReveal.objects.filter( location=loc )     
             for cohort in cohort_intersection:                
-            
                 # get the users that belong to this cohort and have revealed themselves
                 revealed_users = []
-                users = loc.revealed_users.all().filter( groups__in=[ cohort.id ] )
-                for user in users:
-                    revealed_users.append({
-                        'username': user.username
-                    })
+                for user_reveal in user_reveals:
+                    if cohort in user_reveal.user.groups.all():
+                        revealed_users.append({
+                            'username': user_reveal.user.username
+                        })
                 
                 response.append({
                     'cohort': {
@@ -136,15 +137,15 @@ class LocationRevealAPIHandler(APIView):
                 })
         
             return Response( response, status=status.HTTP_200_OK )
-        
-        else:
+        except Exception as e:
+            print e
             return Response( { 'reason': 'User needs to first reveal themselves before getting other users' }, status=status.HTTP_400_BAD_REQUEST )
-            
+    
     def post(self, request, pk, format=None):
         """
         Reveal that the user has been here
         """
         loc = self.get_object(pk)
-        loc.revealed_users.add( request.user )
-        loc.save( )
+        reveal = UserReveal( user=request.user, location=loc )
+        reveal.save( )
         return Response( { }, status=status.HTTP_200_OK )
