@@ -30,6 +30,6 @@ class CohortListCreateAPIHandler(APIView):
             # check if user belongs to cohort and if they don't add them to the cohort
             obj.user_set.add( request.user )
             
-            return Response( { 'id': obj.id }, status=status.HTTP_201_CREATED )
+            return Response( { 'id': obj.id, 'name': obj.name }, status=status.HTTP_201_CREATED )
         else:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
