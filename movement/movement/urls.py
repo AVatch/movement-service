@@ -23,6 +23,7 @@ VERSION = 'v1'
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/' + VERSION + '/', include('cohorts.urls')),
     url(r'^api/' + VERSION + '/', include('locations.urls')),
     
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
