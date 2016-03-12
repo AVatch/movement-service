@@ -26,7 +26,6 @@ urlpatterns = [
     url(r'^api/' + VERSION + '/', include('cohorts.urls')),
     url(r'^api/' + VERSION + '/', include('locations.urls')),
     
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api-token-auth/', rest_views.obtain_auth_token)
+    url(r'^api-auth', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-token-auth', rest_views.obtain_auth_token)
 ]
-
