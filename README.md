@@ -39,6 +39,14 @@ $ python manage.py runserver <port number, default to 8000>
 ```
 
 ### Availible Endpoints
+##### Admin Module
+```
+GET /admin
+```
+##### Authentication Module
+```
+POST  /api-token-auth
+```
 ##### Cohorts Module
 ```
 GET  /api/v1/cohorts
@@ -52,3 +60,8 @@ PUT  /api/v1/locations
 GET  /api/v1/locations/<pk>/reveal
 POST /api/v1/locations/<pk>/reveal
 ```
+
+
+### Cohorts Module
+```GET  /api/v1/cohorts```
+
