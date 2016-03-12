@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -32,6 +33,21 @@ class LocationListCreateAPIHandler(APIView):
         except Exception as e:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
 
+    def put(self, request, format=None):
+        """
+        Allow a user to say they did not visit these coords 
+        """
+        loc_id = request.data.get('id', None)
+        if loc_id:
+            try:
+                loc = Location.objects.get(id=loc_id)
+                loc.total_visits = max( loc.total_visits - 1, 0 )
+                loc.save( )
+                return Response( {}, status=status.HTTP_200_OK )
+            except ObjectDoesNotExist:
+                return Response( {}, status=status.HTTP_404_NOT_FOUND ) 
+        else:
+            return Response( {}, status=status.HTTP_400_BAD_REQUEST )
     
     def post(self, request, format=None):
         """
@@ -73,3 +89,27 @@ class LocationListCreateAPIHandler(APIView):
             return Response( { 'id': loc.id }, status=status.HTTP_201_CREATED )
         else:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
+
+
+class LocationRevealAPIHandler(APIView):
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    def get(self, request, format=None):
+        """
+        Get a list of other users who have revealed themselves for the venue
+        that are in your cohort
+        """
+        pass
+
+    def post(self, request, format=None):
+        """
+        Reveal that the user has been here
+        """
+        pass
+
+
+
+
+
+
+
+
