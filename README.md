@@ -1,6 +1,10 @@
 # Movement Service
 
+### Overview
+A Django backend service to support movement
+
 ### Requirements
+Reference the ```requirements.txt``` file
 
 ### Configuration
 ####Install dependencies
@@ -28,4 +32,8 @@ $ python manage.py createsuperuser
 $ <follow prompts>
 ```
 
-
+### Running the server locally
+Provided everything is installed and you are sourced into your ```virtualenv``` just run the normal Django command
+```
+$ python manage.py runserver <port number, default to 8000> 
+```
