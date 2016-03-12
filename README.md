@@ -42,6 +42,7 @@ $ python manage.py runserver <port number, default to 8000>
 ```
 
 ### Availible Endpoints
+All endpoints are ```application/json``` unless otherwise specified
 ##### Admin Module
 ```
 GET /admin
@@ -101,3 +102,23 @@ Endpoint which returns a list of cohorts the requesting user belongs to
   }
 ]
 ```
+
+```POST [Token Protected] /api/v1/cohorts```
+
+Endpoint which allows a user to either join or create a chort given a name. If the cohort does not exist, it is created.
+
+**REQUEST BODY**
+```
+{
+   "name": "the cohort name you are joining or starting"
+}
+```
+**RESPONSE**
+```
+{
+   "id": 1,
+   "name": "A name for the cohort"
+}
+```
+
+
