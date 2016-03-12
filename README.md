@@ -167,5 +167,14 @@ Pass the server a lat, lng pair and have the server perform a geo lookup and log
 
 ```PUT [Token Protected] /api/v1/locations```
 
+In the event a user has not actually been to the venue, this endpoint is used to decrement the appropriate values.
+
+**REQUEST BODY**
+```
+{
+   "id" : 1
+}
+```
+
 GET  /api/v1/locations/<pk>/reveal
 POST /api/v1/locations/<pk>/reveal
