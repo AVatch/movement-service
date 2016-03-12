@@ -49,7 +49,7 @@ GET /admin
 ```
 ##### Authentication Module
 ```
-POST  /api-token-auth
+POST /api-token-auth
 ```
 ##### Cohorts Module
 ```
