@@ -4,5 +4,7 @@ from .models import Location
 
 
 class LocationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'name', 'lat', 'lng', 'total_visits', 'total_reveals')
+    list_display_links = ('name',)
+    
 admin.site.register(Location, LocationAdmin)

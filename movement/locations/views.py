@@ -14,8 +14,24 @@ class LocationListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     def get(self, request, format=None):
         """
+        Given a list of Location ids return the basic info for that list
+            @params Ids of coords
+            @example localhost:8000/api/v1/locations?ids=1,2,3,4
+            
         """
-        return Response( { } )
+        try:
+            ids = [ int(id) for id in request.query_params.get('ids', '').split(',') ]
+            # ref: https://docs.djangoproject.com/en/dev/ref/models/querysets/#in
+            locations = Location.objects.filter( id__in=ids )
+            return Response( [ { 'id': loc.id, 
+                                 'name': loc.name, 
+                                 'lat': loc.lat, 
+                                 'lng': loc.lng,
+                                 'total_visits': loc.total_visits } for loc in locations ] )
+            
+        except Exception as e:
+            return Response( { }, status=status.HTTP_400_BAD_REQUEST )
+
     
     def post(self, request, format=None):
         """
@@ -30,7 +46,12 @@ class LocationListCreateAPIHandler(APIView):
                 # this should be done as a celery task asynchronously but we will
                 # keep it synchronous for now
                 geoInfo = geoSearch( loc.lat, loc.lng )
-                
+                if geoInfo is None:
+                    # bad coords or we didnt find anything, so dump the point
+                    # TODO: think more about how to handle this
+                    loc.delete()
+                    return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
+                    
                 loc.name = geoInfo.get('name')
                 # TODO handle Location model use of category.
                 # prob should be a many to many with a Category model
