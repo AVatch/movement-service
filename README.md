@@ -24,10 +24,10 @@ SECRET_KEY="SOME SUPER SECRET KEY HERE FOR DJANGO TO USE"
 GEO_SERVICE_API_KEY="SOME COOL KEY FROM A PROVIDER"
 ```
 
-#### 2 Configure Database TBD
+#### 3 Configure Database TBD
 For now it defaults to an sqlite db so no need to run anything
 
-#### 3 Perform initial migrations and create a superuser
+#### 4 Perform initial migrations and create a superuser
 ```
 $ python manage.py makemigrations
 $ python manage.py migrate
