@@ -10,7 +10,6 @@ class Location(models.Model):
     lng = models.FloatField()
     
     total_visits = models.IntegerField(default=0)
-    total_reveals = models.IntegerField(default=0)
     
     revealed_users = models.ManyToManyField(User, blank=True)
     associated_cohorts = models.ManyToManyField(Group, blank=True)
