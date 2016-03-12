@@ -36,6 +36,10 @@ class LocationListCreateAPIHandler(APIView):
                 # prob should be a many to many with a Category model
             
             # increment the total visits
+            # TODO: This needs to be more robust so that 
+            # we can keep track of visits on a per cohort basis.
+            # ie. Cohort01 total_visits was 12 while Cohort02 total_visits was 2
+            # same should apply to total_reveals, altough that is more simple
             loc.total_visits += 1
             
             # add the cohort the user belongs in to the Location
