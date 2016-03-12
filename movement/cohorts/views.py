@@ -10,12 +10,19 @@ from .serializers import CohortSerializer
 
 class CohortListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
+    def get(self, request, format=None):
+        """
+        Return a list of all the cohorts the user belongs to
+            @authentication: token
+        """
+        return Response( [ { 'id': group.id, 'name': group.name } for group in request.user.groups.all() ], status=status.HTTP_200_OK )
+        
     def post(self, request, format=None):
         """
         Create a cohort obj or return the id if it exists.
         Also adds the user to the cohort. 
         Cohorts are simply the default Django Group object for now.
-            @requires: token authentication
+            @authentication: token
             @reference: https://docs.djangoproject.com/en/1.9/ref/contrib/auth/#django.contrib.auth.models.Group
         """
 
