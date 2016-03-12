@@ -20,6 +20,7 @@ from rest_framework.authtoken import views as rest_views
 
 
 VERSION = 'v1'
+admin.site.site_header = 'CT | Movement'
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
