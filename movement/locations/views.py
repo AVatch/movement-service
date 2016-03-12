@@ -102,13 +102,44 @@ class LocationRevealAPIHandler(APIView):
         except ObjectDoesNotExist:
             raise Http404
     
-    def get(self, request, format=None):
+    def get(self, request, pk, format=None):
         """
         Get a list of other users who have revealed themselves for the venue
         that are in your cohort
         """
-        pass
-
+        loc = self.get_object(pk)
+        
+        # first lets ensure the user has already revealed themselves
+        if request.user in loc.revealed_users.all():
+            
+            # find the cohort intersection between the requester and the locaiton venues
+            cohort_intersection = set( request.user.groups.all() ).intersection( loc.associated_cohorts.all() ) 
+        
+            response = []
+            
+            for cohort in cohort_intersection:                
+            
+                # get the users that belong to this cohort and have revealed themselves
+                revealed_users = []
+                users = loc.revealed_users.all().filter( groups__in=[ cohort.id ] )
+                for user in users:
+                    revealed_users.append({
+                        'username': user.username
+                    })
+                
+                response.append({
+                    'cohort': {
+                        'id': cohort.id,
+                        'name': cohort.name
+                    },
+                    'revealed_users': revealed_users
+                })
+        
+            return Response( response, status=status.HTTP_200_OK )
+        
+        else:
+            return Response( { 'reason': 'User needs to first reveal themselves before getting other users' }, status=status.HTTP_400_BAD_REQUEST )
+            
     def post(self, request, pk, format=None):
         """
         Reveal that the user has been here
