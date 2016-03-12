@@ -20,7 +20,7 @@ from rest_framework.authtoken import views as rest_views
 
 
 VERSION = 'v1'
-admin.site.site_header = 'CT | Movement'
+admin.site.site_header = 'CT | Movement' # http://stackoverflow.com/questions/4938491/django-admin-change-header-django-administration-text
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
