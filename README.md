@@ -65,6 +65,23 @@ POST /api/v1/locations/<pk>/reveal
 ```
 
 
-### Cohorts Module
-```GET  /api/v1/cohorts```
+### API Authentication Module
+```POST  /api-token-auth```
+Endpoint which generates a token for user to authenticate requests with. All token-protected endpoints require the token to be added to the requet header in the following manner:
+```
+Authorization: Token <Your Token>
+```
 
+**REQUEST BODY**
+```
+{
+   "username" : "the username",
+   "password" : "the password"
+}
+```
+**RESPONSE**
+```
+{
+   "token" : "you're amazing token"
+}
+```
