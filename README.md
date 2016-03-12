@@ -125,7 +125,7 @@ Endpoint which allows a user to either join or create a chort given a name. If t
 
 ```GET [Token Protected] /api/v1/locations```
 
-Given a URL parameter of ids returns a basic venue information. Only the valid ids are provessed and return objects. Note that the ```total_reveals``` parameter is a gross value of reveals across all cohorts.
+Given a URL parameter of ids returns a basic venue information. Only the valid ids are provessed and return objects. Note that the ```total_reveals``` parameter is a gross value of reveals across all cohorts. The ids should be comma delimated.
 
 **URL PARAM**
 ```
@@ -146,10 +146,26 @@ ids=1,2,3,4
 ]
 ```
 
+```POST [Token Protected] /api/v1/locations```
 
+Pass the server a lat, lng pair and have the server perform a geo lookup and log the point. If the point exists, increment the necessary variables, otherwise create the point. The geo lookup is only performed once on creation.
 
+**REQUEST BODY**
+```
+{
+   "lat": 45.00000,
+   "lng": -74.0000
+}
+```
 
-POST /api/v1/locations
-PUT  /api/v1/locations
+**RESPONSE**
+```
+{
+   "id" : 1
+}
+```
+
+```PUT [Token Protected] /api/v1/locations```
+
 GET  /api/v1/locations/<pk>/reveal
 POST /api/v1/locations/<pk>/reveal
