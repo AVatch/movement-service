@@ -121,4 +121,33 @@ Endpoint which allows a user to either join or create a chort given a name. If t
 }
 ```
 
+### API Locations Module
 
+```GET [Token Protected] /api/v1/locations```
+
+Given a URL parameter of ids returns a basic venue information. Only the valid ids are provessed and return objects. Note that the ```total_reveals``` parameter is a gross value of reveals across all cohorts.
+
+**URL PARAM**
+```ids=1,2,3,4```
+
+**RESPONSE**
+```
+[
+   {
+      "id": 1,
+      "lat": 40.741117,
+      "lng": -74.002182,
+      "total_visits": 23,
+      "total_reveals": 12,
+      "name": "Venue Name Here"
+   }
+]
+```
+
+
+
+
+POST /api/v1/locations
+PUT  /api/v1/locations
+GET  /api/v1/locations/<pk>/reveal
+POST /api/v1/locations/<pk>/reveal
