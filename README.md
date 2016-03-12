@@ -128,7 +128,9 @@ Endpoint which allows a user to either join or create a chort given a name. If t
 Given a URL parameter of ids returns a basic venue information. Only the valid ids are provessed and return objects. Note that the ```total_reveals``` parameter is a gross value of reveals across all cohorts.
 
 **URL PARAM**
-```ids=1,2,3,4```
+```
+ids=1,2,3,4
+```
 
 **RESPONSE**
 ```
