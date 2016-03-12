@@ -1,5 +1,7 @@
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -93,6 +95,13 @@ class LocationListCreateAPIHandler(APIView):
 
 class LocationRevealAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
+    
+    def get_object(self, pk):
+        try:
+            return Location.objects.get(pk=pk)
+        except ObjectDoesNotExist:
+            raise Http404
+    
     def get(self, request, format=None):
         """
         Get a list of other users who have revealed themselves for the venue
@@ -100,16 +109,11 @@ class LocationRevealAPIHandler(APIView):
         """
         pass
 
-    def post(self, request, format=None):
+    def post(self, request, pk, format=None):
         """
         Reveal that the user has been here
         """
-        pass
-
-
-
-
-
-
-
-
+        loc = self.get_object(pk)
+        loc.revealed_users.add( request.user )
+        loc.save( )
+        return Response( { }, status=status.HTTP_200_OK )

@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import LocationListCreateAPIHandler
+from .views import LocationListCreateAPIHandler, LocationRevealAPIHandler
 
 # API endpoints
 urlpatterns = [
@@ -7,9 +7,9 @@ urlpatterns = [
         LocationListCreateAPIHandler.as_view(),
         name='locations-list'),
 
-    # url(r'^clipboards/(?P<pk>[0-9]+)$',
-    #     views.ClipboardDetail.as_view(),
-    #     name='clipboard-detail'),
+    url(r'^locations/(?P<pk>[0-9]+)/reveal',
+        LocationRevealAPIHandler.as_view(),
+        name='location-reveal'),
 
     # url(r'^clipboards/(?P<pk>[0-9]+)/snippets$',
     #     views.ClipboardSnippetList.as_view(),
