@@ -176,5 +176,27 @@ In the event a user has not actually been to the venue, this endpoint is used to
 }
 ```
 
-GET  /api/v1/locations/<pk>/reveal
-POST /api/v1/locations/<pk>/reveal
+```GET [Token Protected] /api/v1/locations/<pk>/reveal```
+
+Returns a list of users who belong in the cohorts requester belongs to and have also revealed themselves at the venue. If this is called and the requester has not revealed themselves it returns a bad request. ```<pk>``` is the id of the location.
+
+**RESPONSE**
+```
+[
+   {
+      "cohort": {
+         "id": 1,
+         "name": "cohort name"
+      },
+      "revealed_users": [
+         {
+            "username": "someone"
+         }
+      ]
+   }
+]
+```
+
+``` POST [Token Protected] /api/v1/locations/<pk>/reveal```
+
+Reveals the requested user as being at the location identified by ```<pk>```
