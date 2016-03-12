@@ -36,7 +36,6 @@ class LocationListCreateAPIHandler(APIView):
     def post(self, request, format=None):
         """
         """
-        authentication_classes = (SessionAuthentication, TokenAuthentication)
         serializer = LocationSerializer( data=request.data )
         if serializer.is_valid():
             
