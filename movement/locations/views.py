@@ -30,6 +30,7 @@ class LocationListCreateAPIHandler(APIView):
                                  'name': loc.name, 
                                  'lat': loc.lat, 
                                  'lng': loc.lng,
+                                 'total_reveals': loc.get_total_reveals( ),
                                  'total_visits': loc.get_total_visits( ) 
                                } for loc in locations ] )
             
