@@ -88,6 +88,8 @@ Authorization: Token <Your Token>
 }
 ```
 
+---
+
 ### API Cohorts Module
 ```GET [Token Protected] /api/v1/cohorts```
 
@@ -102,6 +104,8 @@ Endpoint which returns a list of cohorts the requesting user belongs to
   }
 ]
 ```
+
+---
 
 ```POST [Token Protected] /api/v1/cohorts```
 
@@ -120,6 +124,8 @@ Endpoint which allows a user to either join or create a chort given a name. If t
    "name": "A name for the cohort"
 }
 ```
+
+---
 
 ### API Locations Module
 
@@ -146,6 +152,8 @@ ids=1,2,3,4
 ]
 ```
 
+---
+
 ```POST [Token Protected] /api/v1/locations```
 
 Pass the server a lat, lng pair and have the server perform a geo lookup and log the point. If the point exists, increment the necessary variables, otherwise create the point. The geo lookup is only performed once on creation.
@@ -165,6 +173,8 @@ Pass the server a lat, lng pair and have the server perform a geo lookup and log
 }
 ```
 
+---
+
 ```PUT [Token Protected] /api/v1/locations```
 
 In the event a user has not actually been to the venue, this endpoint is used to decrement the appropriate values.
@@ -175,6 +185,8 @@ In the event a user has not actually been to the venue, this endpoint is used to
    "id" : 1
 }
 ```
+
+---
 
 ```GET [Token Protected] /api/v1/locations/<pk>/reveal```
 
@@ -197,6 +209,10 @@ Returns a list of users who belong in the cohorts requester belongs to and have 
 ]
 ```
 
+---
+
 ``` POST [Token Protected] /api/v1/locations/<pk>/reveal```
 
 Reveals the requested user as being at the location identified by ```<pk>```
+
+---
