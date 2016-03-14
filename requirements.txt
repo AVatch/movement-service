@@ -6,3 +6,4 @@ django-filter
 requests
 celery
 django-celery
+django-cors-headers
