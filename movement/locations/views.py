@@ -63,19 +63,21 @@ class LocationListCreateAPIHandler(APIView):
         """
         serializer = LocationSerializer( data=request.data )
         if serializer.is_valid():
+        
+            geoInfo = geoSearch( serializer.data.get('lat'), serializer.data.get('lng') )
+            if geoInfo is None:
+                # bad coords or we didnt find anything, so dump the point
+                # TODO: think more about how to handle this
+                loc.delete()
+                return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
             
             loc, created = Location.objects.get_or_create( lat=serializer.data.get('lat'), 
-                                                           lng=serializer.data.get('lng') )
+                                                           lng=serializer.data.get('lng'),
+                                                           name=geoInfo.get('name') )
             if created:
                 # this should be done as a celery task asynchronously but we will
                 # keep it synchronous for now
-                geoInfo = geoSearch( loc.lat, loc.lng )
-                if geoInfo is None:
-                    # bad coords or we didnt find anything, so dump the point
-                    # TODO: think more about how to handle this
-                    loc.delete()
-                    return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
-                    
+
                 loc.name = geoInfo.get('name')
                 # TODO handle Location model use of category.
                 # prob should be a many to many with a Category model
