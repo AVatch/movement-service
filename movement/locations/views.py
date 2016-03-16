@@ -68,19 +68,17 @@ class LocationListCreateAPIHandler(APIView):
             if geoInfo is None:
                 # bad coords or we didnt find anything, so dump the point
                 # TODO: think more about how to handle this
-                loc.delete()
                 return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
             
-            loc, created = Location.objects.get_or_create( lat=serializer.data.get('lat'), 
-                                                           lng=serializer.data.get('lng'),
-                                                           name=geoInfo.get('name') )
-            if created:
-                # this should be done as a celery task asynchronously but we will
-                # keep it synchronous for now
-
-                loc.name = geoInfo.get('name')
-                # TODO handle Location model use of category.
-                # prob should be a many to many with a Category model
+            checkbyName = Location.objects.filter(name=geoInfo.get('name'))
+            if checkbyName:
+                # venue by name exists
+                loc = checkbyName[0]
+            else:
+                # venue by name is not registered so register it
+                loc = Location.objects.create( lat=serializer.data.get('lat'), 
+                                               lng=serializer.data.get('lng'),
+                                               name=geoInfo.get('name') )
             
             # increment the total visits
             for cohort in request.user.groups.all():
