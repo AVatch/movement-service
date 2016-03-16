@@ -147,6 +147,5 @@ class LocationRevealAPIHandler(APIView):
         Reveal that the user has been here
         """
         loc = self.get_object(pk)
-        reveal = UserReveal( user=request.user, location=loc )
-        reveal.save( )
+        reveal, created = UserReveal.objects.get_or_create( user=request.user, location=loc )
         return Response( { }, status=status.HTTP_200_OK )
