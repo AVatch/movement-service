@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from .geoservice import geoSearch
 from .models import Location, CohortAssociation, UserReveal
@@ -97,6 +98,8 @@ class LocationListCreateAPIHandler(APIView):
 
 class LocationRevealAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return Location.objects.get(pk=pk)
@@ -148,10 +151,10 @@ class LocationRevealAPIHandler(APIView):
         
         print "Hello there"
         print request.auth
+        print request.user
         
-        if request.auth:
-            loc = self.get_object(pk)
-            reveal, created = UserReveal.objects.get_or_create( user=request.user, location=loc )
-            return Response( { }, status=status.HTTP_200_OK )
-        else:
-            return Response( { }, status=status.HTTP_401_UNAUTHORIZED )
+    
+        loc = self.get_object(pk)
+        reveal, created = UserReveal.objects.get_or_create( user=request.user, location=loc )
+        return Response( { }, status=status.HTTP_200_OK )
+    
