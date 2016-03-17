@@ -81,7 +81,20 @@ class LocationListCreateAPIHandler(APIView):
                                                lng=serializer.data.get('lng'),
                                                name=geoInfo.get('name') )
             
-            # increment the total visits
+            return Response( { 'id': loc.id }, status=status.HTTP_201_CREATED )
+        else:
+            return Response( { }, status=status.HTTP_400_BAD_REQUEST )
+
+
+class LocationVisitAPIHandler(APIView):
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, pk, format=None):
+        
+        # increment the total visits
+        try:
+            loc = Location.objects.get(pk=pk)
             for cohort in request.user.groups.all():
                 cohort_association, created = CohortAssociation.objects.get_or_create( cohort=cohort,
                                                                                        location=loc )
@@ -90,9 +103,8 @@ class LocationListCreateAPIHandler(APIView):
 
             # commit the changes
             loc.save()
-        
-            return Response( { 'id': loc.id }, status=status.HTTP_201_CREATED )
-        else:
+            return Response( { }, status=status.HTTP_200_OK )
+        except Exception as e:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
 
 
