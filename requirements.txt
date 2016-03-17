@@ -7,3 +7,4 @@ requests
 celery
 django-celery
 django-cors-headers
+foursquare

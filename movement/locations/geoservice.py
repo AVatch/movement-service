@@ -1,18 +1,11 @@
 import os
 import requests
 
-GEO_PROVIDER = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+GEO_PROVIDER = 'https://api.foursquare.com/v2/venues/search'
 
 # https://developers.google.com/places/supported_types#table1
 GEO_PROVIDER_CATEGORY_EXCLUSION = [
-    'locality',
-    'sublocality',
-    'neighborhood',
-    'country',
-    'postal_code',
-    'administrative_area_level_1',
-    'administrative_area_level_2',
-    'administrative_area_level_3',
+    
 ]
 
 def process_response(response):
@@ -20,11 +13,11 @@ def process_response(response):
     for now return only the first response in the search array
     as long as it is not a generic neighborhood or something
     """
-    for result in response['results']:
-        if not set(result['types']).intersection(set(GEO_PROVIDER_CATEGORY_EXCLUSION)):
+    for result in response['response']['venues']:
+        if not set(result['categories'][0]['name']).intersection(set(GEO_PROVIDER_CATEGORY_EXCLUSION)):
             return {
                 'name': result['name'],
-                'type': result['types']         
+                'type': result['categories'][0]['name']         
             }
     return None
 
@@ -34,9 +27,10 @@ def geoSearch(lat, lng, radius=100):
     perform a query against a geo provider
     """
     params = {
-        'location': str(lat) + ',' + str(lng),
-        'radius': radius,
-        'key': os.environ.get("GEO_SERVICE_API_KEY")
+        'll': str(lat) + ',' + str(lng),
+        'client_id': os.environ.get("FOURSQUARE_CLIENT_ID"),
+        'client_secret': os.environ.get("FOURSQUARE_CLIENT_SECRET"),
+        'v': os.environ.get("FOURSQUARE_V")
     }
     response = requests.get(GEO_PROVIDER, params=params)
     if response.status_code == 200:
