@@ -97,7 +97,6 @@ class LocationListCreateAPIHandler(APIView):
 
 class LocationRevealAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
-    
     def get_object(self, pk):
         try:
             return Location.objects.get(pk=pk)
