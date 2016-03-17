@@ -145,6 +145,10 @@ class LocationRevealAPIHandler(APIView):
         """
         Reveal that the user has been here
         """
+        
+        print "Hello there"
+        print request.auth
+        
         if request.auth:
             loc = self.get_object(pk)
             reveal, created = UserReveal.objects.get_or_create( user=request.user, location=loc )
