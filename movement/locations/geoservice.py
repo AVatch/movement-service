@@ -43,6 +43,8 @@ def geoSearch(lat, lng, radius=100):
     if response.status_code == 200:
         return process_response( response.json() )
     else:
+        print "GeoLookup Error"
+        print response
         return None
     
 if __name__=='__main__':
