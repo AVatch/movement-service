@@ -159,13 +159,7 @@ class LocationRevealAPIHandler(APIView):
     def post(self, request, pk, format=None):
         """
         Reveal that the user has been here
-        """
-        
-        print "Hello there"
-        print request.auth
-        print request.user
-        
-    
+        """    
         loc = self.get_object(pk)
         reveal, created = UserReveal.objects.get_or_create( user=request.user, location=loc )
         return Response( { }, status=status.HTTP_200_OK )
