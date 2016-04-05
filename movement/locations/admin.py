@@ -16,7 +16,6 @@ class LocationAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'lat', 'lng', '_total_visits', '_total_reveals')
     list_display_links = ('name',)
     inlines = [
-        LocationCategoryAdmin,
         CohortAssociationAdmin,
         UserRevealAdmin
     ]
