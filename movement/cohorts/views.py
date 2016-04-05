@@ -1,11 +1,31 @@
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
-from .serializers import CohortSerializer
+from .serializers import AccountSerializer, CohortSerializer
+
+class AccountCreationAPIHandler(APIView):
+    def post(self, request, format=None):
+        """
+        Create a new user object
+        """
+        serializer = AccountSerializer( data=request.data )
+        if serializer.is_valid():
+            user = User.objects.create_user(
+                serializer.data.get('username'), 
+                serializer.data.get('email'),
+                serializer.data.get('password')
+           )
+           return Response( {  }, status=status.HTTP_201_CREATED )
+        else:
+            return Response( { 'msg': 'Please provide a valid email and password of at least 7 characters' }, 
+                status=status.HTTP_400_BAD_REQUEST )
+        
+
 
 class CohortListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
