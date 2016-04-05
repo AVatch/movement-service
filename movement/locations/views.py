@@ -12,7 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Location, CohortAssociation, UserReveal
 from .serializers import LocationRawSerializer, LocationSerializer
 
-
 class LocationListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
     def get(self, request, format=None):

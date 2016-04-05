@@ -25,11 +25,12 @@ class CohortListCreateAPIHandler(APIView):
 
         serializer = CohortSerializer( data=request.data )
         if serializer.is_valid():
-            obj, created = Group.objects.get_or_create( name=serializer.data.get('name').lower() ) # we lowercase groups to avoid user error
-            
-            # check if user belongs to cohort and if they don't add them to the cohort
-            obj.user_set.add( request.user )
-            
-            return Response( { 'id': obj.id, 'name': obj.name }, status=status.HTTP_201_CREATED )
+            if Group.objects.filter( name=serializer.data.get('name').lower() ):
+                obj = Group.objects.create( name=serializer.data.get('name').lower() ) # we lowercase groups to avoid user error    
+                # check if user belongs to cohort and if they don't add them to the cohort
+                obj.user_set.add( request.user )
+                return Response( { 'id': obj.id, 'name': obj.name }, status=status.HTTP_200_OK )
+            else:
+                return Response( { }, status=status.HTTP_404_NOT_FOUND )
         else:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
