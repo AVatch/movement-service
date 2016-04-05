@@ -19,8 +19,8 @@ class AccountCreationAPIHandler(APIView):
                 serializer.data.get('username'), 
                 serializer.data.get('email'),
                 serializer.data.get('password')
-           )
-           return Response( {  }, status=status.HTTP_201_CREATED )
+            )
+            return Response( {  }, status=status.HTTP_201_CREATED )
         else:
             return Response( { 'msg': 'Please provide a valid email and password of at least 7 characters' }, 
                 status=status.HTTP_400_BAD_REQUEST )
