@@ -3,7 +3,7 @@ import requests
 
 GEO_PROVIDER = 'https://api.foursquare.com/v2/venues/search'
 
-# https://developers.google.com/places/supported_types#table1
+# reference: https://developer.foursquare.com/categorytree
 GEO_PROVIDER_CATEGORY_EXCLUSION = [
     "530e33ccbcbc57f1066bbfe4",
     "50aa9e094b90af0d42d5de0d",
@@ -21,15 +21,21 @@ def process_response(response):
     as long as it is not a generic neighborhood or something
     """
     for result in response['response']['venues']:
-        if not set(result['categories'][0]['id']).intersection(set(GEO_PROVIDER_CATEGORY_EXCLUSION)):
+        
+        categories = result['categories']    
+        primary_category = [ category for category in categories if category['primary'] ][0]
+        
+        if not set(primary_category['id']).intersection(set(GEO_PROVIDER_CATEGORY_EXCLUSION)):
+            print("geo_service.process_response(): Found valid location")
             return {
                 'name': result['name'],
-                'type': result['categories'][0]['pluralName']
+                'category': primary_category['pluralName']
             }
+
     return None
 
 
-def geoSearch(lat, lng, radius=100):
+def search(lat, lng, radius=100):
     """
     perform a query against a geo provider
     """
@@ -40,13 +46,15 @@ def geoSearch(lat, lng, radius=100):
         'v': os.environ.get("FOURSQUARE_V")
     }
     response = requests.get(GEO_PROVIDER, params=params)
-    if response.status_code == 200:
-        return process_response( response.json() )
-    else:
-        print "GeoLookup Error"
-        print response
-        return None
     
+    if response.status_code == 200:
+    
+        return process_response( response.json() )
+
+    else:
+        print("geo_service.search(): " + str(response) )
+        return None    
+        
 if __name__=='__main__':
     # from os.path import join, dirname
     # from dotenv import load_dotenv

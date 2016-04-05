@@ -9,9 +9,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .geoservice import geoSearch
 from .models import Location, CohortAssociation, UserReveal
-from .serializers import LocationSerializer
+from .serializers import LocationRawSerializer, LocationSerializer
 
 
 class LocationListCreateAPIHandler(APIView):
@@ -61,27 +60,16 @@ class LocationListCreateAPIHandler(APIView):
     
     def post(self, request, format=None):
         """
+        Given lat/lng lookup location and store it to the server
         """
-        serializer = LocationSerializer( data=request.data )
+        serializer = LocationRawSerializer( data=request.data )
+                
         if serializer.is_valid():
-        
-            geoInfo = geoSearch( serializer.data.get('lat'), serializer.data.get('lng') )
-            if geoInfo is None:
-                # bad coords or we didnt find anything, so dump the point
-                # TODO: think more about how to handle this
-                return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
-            
-            checkbyName = Location.objects.filter(name=geoInfo.get('name'))
-            if checkbyName:
-                # venue by name exists
-                loc = checkbyName[0]
+            loc = Location.objects.register_location( **serializer.data )
+            if loc: 
+                return Response( { 'id': loc.id }, status=status.HTTP_201_CREATED )
             else:
-                # venue by name is not registered so register it
-                loc = Location.objects.create( lat=serializer.data.get('lat'), 
-                                               lng=serializer.data.get('lng'),
-                                               name=geoInfo.get('name') )
-            
-            return Response( { 'id': loc.id }, status=status.HTTP_201_CREATED )
+                return Response( { 'reason': 'We could not translate the venue' }, status=status.HTTP_400_BAD_REQUEST )
         else:
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
 
