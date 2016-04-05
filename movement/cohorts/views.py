@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import AccountSerializer, CohortSerializer
 
@@ -29,6 +30,7 @@ class AccountCreationAPIHandler(APIView):
 
 class CohortListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
     def get(self, request, format=None):
         """
         Return a list of all the cohorts the user belongs to
@@ -45,7 +47,7 @@ class CohortListCreateAPIHandler(APIView):
 
         serializer = CohortSerializer( data=request.data )
         if serializer.is_valid():
-            if Group.objects.filter( name=serializer.data.get('name').lower() ):
+            if Group.objects.filter( name=serializer.data.get('name').lower() ).exists( ):
                 obj = Group.objects.get( name=serializer.data.get('name').lower() ) # we lowercase groups to avoid user error    
                 # check if user belongs to cohort and if they don't add them to the cohort
                 obj.user_set.add( request.user )
