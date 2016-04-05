@@ -14,6 +14,9 @@ class LocationCategory(models.Model):
     
     def __str__(self):
         return '%s' % ( self.name, )
+    
+    def __unicode__(self):
+        return '%s' % ( self.name, )
 
 
 class LocationManager(models.Manager):
