@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import LocationCategory, Location, CohortAssociation, UserReveal
 
 class LocationCategoryAdmin(admin.ModelAdmin):
-    pass
+    model = LocationCategory
 admin.site.register(LocationCategory, LocationCategoryAdmin)
 
 class CohortAssociationAdmin(admin.TabularInline):
