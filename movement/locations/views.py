@@ -30,11 +30,13 @@ class LocationListCreateAPIHandler(APIView):
                                  'name': loc.name, 
                                  'lat': loc.lat, 
                                  'lng': loc.lng,
+                                 'categories': [ { 'name': category.name } for category in loc.categories.all() ],
                                  'total_reveals': loc.get_total_reveals( ),
                                  'total_visits': loc.get_total_visits( ) 
                                } for loc in locations ] )
             
         except Exception as e:
+            print e
             return Response( { }, status=status.HTTP_400_BAD_REQUEST )
 
     def put(self, request, format=None):
