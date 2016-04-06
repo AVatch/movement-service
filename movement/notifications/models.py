@@ -28,16 +28,16 @@ class Notification(models.Model):
 def issue_push_notification(sender, instance, **kwargs):
     users = User.objects.filter(groups=instance.cohort)
     tokens = [user.device_token for user in users]
-    # response = requests.post(
-    #     'https://api.ionic.io/push/notifications', 
-    #     data={
-    #         "tokens": tokens,
-    #         "profile": "my-security-profile",
-    #         "notification": {
-    #             "title": instance.title,
-    #             "message": instance.message
-    #         }
-    #     })
-    # instance.status = True
-    # instance.save()
+    response = requests.post(
+        'https://api.ionic.io/push/notifications', 
+        data={
+            "tokens": tokens,
+            "profile": "push_notifications",
+            "notification": {
+                "title": instance.title,
+                "message": instance.message
+            }
+        })
+    instance.status = True
+    instance.save()
     print "push it push it"
