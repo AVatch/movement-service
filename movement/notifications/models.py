@@ -29,7 +29,11 @@ def issue_push_notification(sender, instance, **kwargs):
     users = User.objects.filter(groups=instance.cohort)
     tokens = [ getattr(user, 'device_token', '') for user in users ]
     response = requests.post(
-        'https://api.ionic.io/push/notifications', 
+        'https://api.ionic.io/push/notifications',
+        headers={
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + os.environ.get("IONIC_TOKEN")
+        }, 
         data={
             "tokens": tokens,
             "profile": "push_notifications",
@@ -38,7 +42,7 @@ def issue_push_notification(sender, instance, **kwargs):
                 "message": instance.message
             }
         })
-    print response
+    print response.text
     # instance.status = True
     # instance.save()
     print "push it push it"
