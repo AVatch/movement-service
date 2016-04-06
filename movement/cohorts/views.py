@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+from .models import Account
 from .serializers import AccountSerializer, CohortSerializer
 
 class AccountCreationAPIHandler(APIView):
@@ -21,6 +22,7 @@ class AccountCreationAPIHandler(APIView):
                 serializer.data.get('email'),
                 serializer.data.get('password')
             )
+            Account.objects.create(user=user, device_token=serializer.data.get('device_token'))
             return Response( {  }, status=status.HTTP_201_CREATED )
         else:
             return Response( { 'msg': 'Please provide a valid email and password of at least 7 characters' }, 
