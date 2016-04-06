@@ -29,8 +29,14 @@ class Notification(models.Model):
 
 @receiver(post_save, sender=Notification, dispatch_uid="issue_push_notification")
 def issue_push_notification(sender, instance, **kwargs):
+    
+    print instance.cohort
+
     users = User.objects.filter(groups=instance.cohort)
-    tokens = [ getattr(user, 'device_token', '') for user in users ]
+    
+    print users
+    
+    tokens = [ getattr(user.account, 'device_token', '') for user in users ]
     
     print tokens
     
@@ -49,6 +55,3 @@ def issue_push_notification(sender, instance, **kwargs):
                 }
         }))
     print response.text
-    # instance.status = True
-    # instance.save()
-    print "push it push it"
