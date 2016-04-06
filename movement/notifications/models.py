@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import os
+import json
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -30,19 +31,22 @@ class Notification(models.Model):
 def issue_push_notification(sender, instance, **kwargs):
     users = User.objects.filter(groups=instance.cohort)
     tokens = [ getattr(user, 'device_token', '') for user in users ]
+    
+    print tokens
+    
     response = requests.post(
         'https://api.ionic.io/push/notifications',
         headers={
           "Content-Type": "application/json",
           "Authorization": "Bearer " + os.environ.get("IONIC_TOKEN")
         }, 
-        data={
-            "tokens": tokens,
-            "profile": "push_notifications",
-            "notification": {
-                "title": instance.title,
-                "message": instance.message
-            }
+        data= json.dumps({
+                "tokens": tokens,
+                "profile": "push_notifications",
+                "notification": {
+                    "title": instance.title,
+                    "message": instance.message
+                })
         })
     print response.text
     # instance.status = True
