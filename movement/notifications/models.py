@@ -38,6 +38,7 @@ def issue_push_notification(sender, instance, **kwargs):
                 "message": instance.message
             }
         })
+    print response
     # instance.status = True
     # instance.save()
     print "push it push it"
