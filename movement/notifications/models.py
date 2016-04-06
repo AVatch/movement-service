@@ -27,7 +27,7 @@ class Notification(models.Model):
 @receiver(post_save, sender=Notification, dispatch_uid="issue_push_notification")
 def issue_push_notification(sender, instance, **kwargs):
     users = User.objects.filter(groups=instance.cohort)
-    tokens = [user.device_token for user in users]
+    tokens = [ getattr(user, 'device_token', '') for user in users ]
     response = requests.post(
         'https://api.ionic.io/push/notifications', 
         data={
