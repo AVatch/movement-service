@@ -8,7 +8,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Account
-from .serializers import AccountSerializer, CohortSerializer
+from .serializers import AccountSerializer, CohortSerializer, DeviceIDSerializer
 
 class AccountCreationAPIHandler(APIView):
     def post(self, request, format=None):
@@ -27,6 +27,24 @@ class AccountCreationAPIHandler(APIView):
         else:
             print serializer.errors
             return Response( { 'msg': 'Please provide a valid email and password of at least 7 characters' }, 
+                status=status.HTTP_400_BAD_REQUEST )
+
+
+class AccountDeviceTokenAPIHandler(APIView):
+    authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, format=None):
+        """
+        Associate a device id with an account
+        """
+        serializer = DeviceIDSerializer( data=request.data )
+        if serializer.is_valid():
+            request.user.account.device_token = serializer.data.get('device_token')
+            request.user.account.save()
+            return Response( {  }, status=status.HTTP_200_OK )
+        else:
+            print serializer.errors
+            return Response( {  }, 
                 status=status.HTTP_400_BAD_REQUEST )
         
 

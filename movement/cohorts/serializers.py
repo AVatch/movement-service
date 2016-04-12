@@ -9,3 +9,5 @@ class AccountSerializer(serializers.Serializer):
 class CohortSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=80) 
 
+class DeviceIDSerializer(serializers.Serializer):
+    device_token = serializers.CharField(max_length=1000) 

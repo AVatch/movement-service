@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import AccountCreationAPIHandler, CohortListCreateAPIHandler
+from .views import AccountCreationAPIHandler, CohortListCreateAPIHandler, AccountDeviceTokenAPIHandler
 
 # API endpoints
 urlpatterns = [
@@ -10,6 +10,10 @@ urlpatterns = [
     url(r'^accounts$',
         AccountCreationAPIHandler.as_view(),
         name='accounts-create'),
+    
+    url(r'^device$',
+        AccountDeviceTokenAPIHandler.as_view(),
+        name='accounts-device'),
 
     # url(r'^clipboards/(?P<pk>[0-9]+)$',
     #     views.ClipboardDetail.as_view(),
