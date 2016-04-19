@@ -14,6 +14,8 @@ from .serializers import LocationRawSerializer, LocationSerializer
 
 class LocationListCreateAPIHandler(APIView):
     authentication_classes = (SessionAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, format=None):
         """
         Given a list of Location ids return the basic info for that list
@@ -31,7 +33,7 @@ class LocationListCreateAPIHandler(APIView):
                                  'lng': loc.lng,
                                  'categories': [ { 'name': category.name } for category in loc.categories.all() ],
                                  'total_reveals': loc.get_total_reveals( ),
-                                 'total_visits': loc.get_total_visits( ) 
+                                 'total_visits': loc.get_total_visits( self.request.user ) 
                                } for loc in locations ] )
             
         except Exception as e:

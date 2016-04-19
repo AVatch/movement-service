@@ -3,6 +3,7 @@ migrations/
 .DS_Store
 *.pem
 connect.sh
+copy_db.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

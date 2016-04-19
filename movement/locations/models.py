@@ -80,7 +80,6 @@ class LocationManager(models.Manager):
                             }
                         )
 
-
 class Location(models.Model):
     name = models.CharField(max_length=140, blank=True)
     lat = models.FloatField()
@@ -95,8 +94,16 @@ class Location(models.Model):
     def __str__(self):
         return '%s <%s,%s>' % ( self.name, str(self.lat), str(self.lng) )
     
-    def get_total_visits(self):
-        return sum( cohort.total_visits for cohort in self.cohortassociation_set.all() )
+    def get_total_visits(self, requester=None):
+        if requester:
+            cohorts = requester.groups.all()
+            relevent_cohort_associations = []
+            for cohort_association in self.cohortassociation_set.all():
+                if cohort_association.cohort in cohorts:
+                    relevent_cohort_associations.append( cohort_association )
+            return sum( cohort.total_visits for cohort in relevent_cohort_associations )
+        else:
+            return sum( cohort.total_visits for cohort in self.cohortassociation_set.all() )
     
     def get_total_reveals(self):
         return self.userreveal_set.all().count()
