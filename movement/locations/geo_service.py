@@ -5,14 +5,14 @@ GEO_PROVIDER = 'https://api.foursquare.com/v2/venues/search'
 
 # reference: https://developer.foursquare.com/categorytree
 GEO_PROVIDER_CATEGORY_EXCLUSION = [
-    "530e33ccbcbc57f1066bbfe4",
-    "50aa9e094b90af0d42d5de0d",
-    "5345731ebcbc57f1066c39b2",
-    "530e33ccbcbc57f1066bbff7",
-    "4f2a25ac4b909258e854f55f",
-    "530e33ccbcbc57f1066bbff8",
-    "530e33ccbcbc57f1066bbff3",
-    "530e33ccbcbc57f1066bbff9"
+    "Neighborhood",
+    "City",
+    "County",
+    "Country",
+    "State",
+    "Town",
+    "Village",
+    "States & Municipalities"
 ]
 
 def process_response(response):
@@ -21,17 +21,15 @@ def process_response(response):
     as long as it is not a generic neighborhood or something
     """
     for result in response['response']['venues']:
-        
-        categories = result['categories']    
-        primary_category = [ category for category in categories if category['primary'] ][0]
-        
-        if not set(primary_category['id']).intersection(set(GEO_PROVIDER_CATEGORY_EXCLUSION)):
-            print("geo_service.process_response(): Found valid location")
-            return {
-                'name': result['name'],
-                'category': primary_category['pluralName'],
-                'foursquare_id': result['id']
-            }
+        categories = result['categories']
+        if categories:
+            primary_category = [ category for category in categories if category['primary'] ][0]
+            if primary_category['name'] not in GEO_PROVIDER_CATEGORY_EXCLUSION:
+                return {
+                    'name': result['name'],
+                    'category': primary_category['pluralName'],
+                    'foursquare_id': result['id']
+                }
 
     return None
 
