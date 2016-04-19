@@ -17,6 +17,9 @@ class LocationCategory(models.Model):
     
     def __unicode__(self):
         return '%s' % ( self.name, )
+    
+    class Meta:
+        verbose_name_plural = "categories"
 
 
 class LocationManager(models.Manager):
