@@ -29,7 +29,8 @@ def process_response(response):
             print("geo_service.process_response(): Found valid location")
             return {
                 'name': result['name'],
-                'category': primary_category['pluralName']
+                'category': primary_category['pluralName'],
+                'foursquare_id': result['id']
             }
 
     return None

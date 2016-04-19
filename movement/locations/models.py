@@ -20,14 +20,18 @@ class LocationCategory(models.Model):
 
 
 class LocationManager(models.Manager):
-    def create_location(self, category_name, location_name, coords):
+    def create_location(self, category_name, location_name, coords, foursquare_id):
         loc_category, created = LocationCategory.objects.get_or_create(
             name = category_name
         )
+        
+        print foursquare_id
+        
         loc = self.create(
             name = location_name,
             lat = coords.get('lat'),
-            lng = coords.get('lng')
+            lng = coords.get('lng'),
+            foursquare_id = foursquare_id
         )
         loc.categories.add( loc_category )
         
@@ -38,8 +42,8 @@ class LocationManager(models.Manager):
         THRESHOLD = 10 # what error are we willing to accept for venue lat / lng
          
         loc_coords_query = self.filter( 
-            lat = int( validated_data.get('lat') * PRECISION ), 
-            lng = int( validated_data.get('lng') * PRECISION )
+            lat = float(int( validated_data.get('lat') * PRECISION )), 
+            lng = float(int( validated_data.get('lng') * PRECISION ))
         )
 
         if loc_coords_query:
@@ -49,35 +53,26 @@ class LocationManager(models.Manager):
                 validated_data.get('lat'),
                 validated_data.get('lng')
             )
+           
             if geo_search_results is None:
                 return None
             else:
-                loc_name_query = self.filter(
-                    name = geo_search_results.get('name')
+                loc_foursquare_id_query = self.filter(
+                    name = geo_search_results.get('foursquare_id')
                 )
-                
-                if loc_name_query:
-                    loc_candidate = loc_name_query[0]
-                    if ( abs( abs(loc_candidate.lat) - abs( int( validated_data.get('lat') * PRECISION ) ) ) < THRESHOLD and 
-                         abs( abs(loc_candidate.lng) - abs( int( validated_data.get('lng') * PRECISION ) ) ) < THRESHOLD ):
-                        return loc_candidate
-                    else:
-                        return self.create_location( 
-                            geo_search_results.get('category'),
-                            geo_search_results.get('name'),
-                            {
-                                'lat': int( validated_data.get('lat') * PRECISION ),
-                                'lng': int( validated_data.get('lng') * PRECISION )
-                            }
-                        )
+
+                if loc_foursquare_id_query:
+                    loc_candidate = loc_foursquare_id_query[0]
+                    return loc_candidate
                 else:
                     return self.create_location( 
-                            geo_search_results.get('category'),
-                            geo_search_results.get('name'),
-                            {
+                            category_name = geo_search_results.get('category'),
+                            location_name = geo_search_results.get('name'),
+                            coords = {
                                 'lat': int( validated_data.get('lat') * PRECISION ),
                                 'lng': int( validated_data.get('lng') * PRECISION )
-                            }
+                            },
+                            foursquare_id = geo_search_results.get('foursquare_id')
                         )
 
 class Location(models.Model):
@@ -85,6 +80,8 @@ class Location(models.Model):
     lat = models.FloatField()
     lng = models.FloatField()
     categories = models.ManyToManyField(LocationCategory, related_name='location_categories')
+    
+    foursquare_id = models.CharField(max_length=200, blank=True, null=True)
     
     time_created = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
