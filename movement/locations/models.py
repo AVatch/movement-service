@@ -43,6 +43,33 @@ class LocationManager(models.Manager):
     def register_location(self, **validated_data):
         PRECISION = 10000 # to what precision do we store lat / lng values
         THRESHOLD = 10 # what error are we willing to accept for venue lat / lng
+        
+        geo_search_results = geo_search(
+            validated_data.get('lat'),
+            validated_data.get('lng')
+        )
+        
+        
+        if geo_search_results is None:
+            return None
+        else:
+            loc_foursquare_id_query = self.filter(
+                name = geo_search_results.get('foursquare_id')
+            )
+
+            if loc_foursquare_id_query:
+                loc_candidate = loc_foursquare_id_query[0]
+                return loc_candidate
+            else:
+                return self.create_location( 
+                        category_name = geo_search_results.get('category'),
+                        location_name = geo_search_results.get('name'),
+                        coords = {
+                            'lat': int( validated_data.get('lat') * PRECISION ),
+                            'lng': int( validated_data.get('lng') * PRECISION )
+                        },
+                        foursquare_id = geo_search_results.get('foursquare_id')
+                    )
          
         loc_coords_query = self.filter( 
             lat = float(int( validated_data.get('lat') * PRECISION )), 
@@ -52,16 +79,13 @@ class LocationManager(models.Manager):
         if loc_coords_query:
             return loc_coords_query[0]
         else:
-            geo_search_results = geo_search(
-                validated_data.get('lat'),
-                validated_data.get('lng')
-            )
+            
            
             if geo_search_results is None:
                 return None
             else:
                 loc_foursquare_id_query = self.filter(
-                    name = geo_search_results.get('foursquare_id')
+                    foursquare_id = geo_search_results.get('foursquare_id')
                 )
 
                 if loc_foursquare_id_query:
